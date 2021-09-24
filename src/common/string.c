@@ -26,6 +26,20 @@ int memcmp(const void *s1, const void *s2, size_t n) {
     return 0;
 }
 
+void *memmove(void *dst, const void *src, size_t n)
+{
+    const char *s = (const char *)src;
+    char *d = (char *)dst;
+    if (s < d && s + n > d) {
+        s += n;
+        d += n;
+        while (n-- > 0) *--d = *--s;
+    } else {
+        while (n-- > 0) *d++ = *s++;
+    }
+    return dst;
+}
+
 char *strncpy(char *restrict dest, const char *restrict src, size_t n) {
     size_t i = 0;
     for (; i < n && src[i] != '\0'; i++)

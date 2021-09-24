@@ -20,6 +20,33 @@ typedef unsigned long long uint64_t;
 typedef int64_t ssize_t;
 typedef uint64_t size_t;
 
+/* Efficient min and max operations */
+#define MIN(_a, _b)                 \
+({                                  \
+    typeof(_a) __a = (_a);          \
+    typeof(_b) __b = (_b);          \
+    __a <= __b ? __a : __b;         \
+})
+
+#define MAX(_a, _b)                 \
+({                                  \
+    typeof(_a) __a = (_a);          \
+    typeof(_b) __b = (_b);          \
+    __a >= __b ? __a : __b;         \
+})
+
+#define ROUNDDOWN(a, n)                 \
+({                                      \
+    uint64_t __a = (uint64_t) (a);      \
+    (typeof(a)) (__a - __a % (n));      \
+})
+
+#define ROUNDUP(a, n)                                           \
+({                                                              \
+    uint64_t __n = (uint64_t) (n);                              \
+    (typeof(a)) (ROUNDDOWN((uint64_t) (a) + __n - 1, __n));     \
+})
+
 // this is compatible with C++: <https://en.cppreference.com/w/c/types/NULL>.
 #define NULL 0
 

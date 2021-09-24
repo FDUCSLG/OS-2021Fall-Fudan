@@ -37,6 +37,7 @@
 cd ~/data
 git clone git://github.com/FDUCSLG/OS-2021Fall-Fudan
 
+cd OS-2021Fall-Fudan
 # 切换到本实验地分支
 git checkout lab1
 
