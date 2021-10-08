@@ -3,7 +3,7 @@
 #ifndef _AARCH64_MMU_H_
 #define _AARCH64_MMU_H_
 
-#include <common/types.h>
+#include <common/defines.h>
 
 #define PAGE_SIZE 4096
 
@@ -42,18 +42,18 @@
 #define KSPACE_MASK 0xffff000000000000
 
 // convert kernel address into physical address.
-#define K2P(addr) ((uint64_t)(addr)-KSPACE_MASK)
+#define K2P(addr) ((u64)(addr)-KSPACE_MASK)
 
 // convert physical address into kernel address.
-#define P2K(addr) ((uint64_t)(addr) + KSPACE_MASK)
+#define P2K(addr) ((u64)(addr) + KSPACE_MASK)
 
 // convert any address into kernel address space.
-#define KSPACE(addr) ((uint64_t)(addr) | KSPACE_MASK)
+#define KSPACE(addr) ((u64)(addr) | KSPACE_MASK)
 
 // conver any address into physical address space.
-#define PSPACE(addr) ((uint64_t)(addr) & ~KSPACE_MASK)
+#define PSPACE(addr) ((u64)(addr) & ~KSPACE_MASK)
 
-typedef uint64_t PTEntry;
+typedef u64 PTEntry;
 typedef PTEntry PTEntries[N_PTE_PER_TABLE];
 typedef PTEntry *PTEntriesPtr;
 

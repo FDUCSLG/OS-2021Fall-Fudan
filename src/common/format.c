@@ -1,12 +1,12 @@
 #include <common/format.h>
 #include <common/string.h>
-#include <common/types.h>
+#include <common/defines.h>
 
-static void _print_int(PutCharFunc put_char, void *ctx, int64_t u, int base, bool is_signed) {
+static void _print_int(PutCharFunc put_char, void *ctx, i64 u, int base, bool is_signed) {
     static char digit[] = "0123456789abcdef";
     static char buf[64];
 
-    uint64_t v = u;
+    u64 v = u;
     if (is_signed && u < 0) {
         v = -v;
         put_char(ctx, '-');
@@ -56,15 +56,15 @@ void vformat(PutCharFunc put_char, void *ctx, const char *fmt, va_list arg) {
 
                 pos++;
             }
-            _INT_CASE("u", uint32_t, 10, 0)
-            _INT_CASE("llu", uint64_t, 10, 0)
-            _INT_CASE("d", int32_t, 10, 1)
-            _INT_CASE("lld", int64_t, 10, 1)
-            _INT_CASE("x", uint32_t, 16, 0)
-            _INT_CASE("llx", uint64_t, 16, 0)
-            _INT_CASE("p", uint64_t, 16, 0)
-            _INT_CASE("zu", size_t, 10, 0)
-            _INT_CASE("zd", ssize_t, 10, 1)
+            _INT_CASE("u", u32, 10, 0)
+            _INT_CASE("llu", u64, 10, 0)
+            _INT_CASE("d", i32, 10, 1)
+            _INT_CASE("lld", i64, 10, 1)
+            _INT_CASE("x", u32, 16, 0)
+            _INT_CASE("llx", u64, 16, 0)
+            _INT_CASE("p", u64, 16, 0)
+            _INT_CASE("zu", usize, 10, 0)
+            _INT_CASE("zd", isize, 10, 1)
             else {
                 special = 0;
             }

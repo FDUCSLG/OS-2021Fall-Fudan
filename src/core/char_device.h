@@ -3,7 +3,7 @@
 #ifndef _CORE_CHAR_DEVICE_
 #define _CORE_CHAR_DEVICE_
 
-#include <common/types.h>
+#include <common/defines.h>
 
 typedef struct {
     char (*get)();

@@ -3,7 +3,7 @@
 #ifndef _COMMON_SPINLOCK_H_
 #define _COMMON_SPINLOCK_H_
 
-#include <common/types.h>
+#include <common/defines.h>
 
 typedef struct {
     volatile bool locked;

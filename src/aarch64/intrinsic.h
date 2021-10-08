@@ -3,10 +3,10 @@
 #ifndef _AARCH64_ARCH_H_
 #define _AARCH64_ARCH_H_
 
-#include <common/types.h>
+#include <common/defines.h>
 
-static inline size_t cpuid() {
-    uint64_t id;
+static inline usize cpuid() {
+    u64 id;
     asm volatile("mrs %[x], mpidr_el1" : [x] "=r"(id));
     return id & 0xff;
 }
@@ -16,14 +16,14 @@ static inline void compiler_fence() {
     asm volatile("" ::: "memory");
 }
 
-static inline uint64_t get_timer_freq() {
-    uint64_t result;
+static inline u64 get_clock_frequency() {
+    u64 result;
     asm volatile("mrs %[freq], cntfrq_el0" : [freq] "=r"(result));
     return result;
 }
 
-static inline uint64_t get_timestamp() {
-    uint64_t result;
+static inline u64 get_timestamp() {
+    u64 result;
     compiler_fence();
     asm volatile("mrs %[cnt], cntpct_el0" : [cnt] "=r"(result));
     compiler_fence();
@@ -49,22 +49,22 @@ static inline void arch_fence() {
 // barriers, since they are intended to access device memory regions. These
 // regions are already marked as nGnRnE in `kernel_pt`.
 
-static inline void device_put_uint32(uint64_t addr, uint32_t value) {
+static inline void device_put_u32(u64 addr, u32 value) {
     compiler_fence();
-    *(volatile uint32_t *)addr = value;
+    *(volatile u32 *)addr = value;
     compiler_fence();
 }
 
-static inline uint32_t device_get_uint32(uint64_t addr) {
+static inline u32 device_get_u32(u64 addr) {
     compiler_fence();
-    uint32_t value = *(volatile uint32_t *)addr;
+    u32 value = *(volatile u32 *)addr;
     compiler_fence();
     return value;
 }
 
 // read Exception Syndrome Register (EL1).
-static inline uint64_t arch_get_esr() {
-    uint64_t result;
+static inline u64 arch_get_esr() {
+    u64 result;
     arch_fence();
     asm volatile("mrs %[x], esr_el1" : [x] "=r"(result));
     arch_fence();
@@ -79,8 +79,8 @@ static inline void arch_reset_esr() {
 }
 
 // read Exception Link Register (EL1).
-static inline uint64_t arch_get_elr() {
-    uint64_t result;
+static inline u64 arch_get_elr() {
+    u64 result;
     arch_fence();
     asm volatile("mrs %[x], elr_el1" : [x] "=r"(result));
     arch_fence();
@@ -102,14 +102,14 @@ static inline void arch_tlbi_vmalle1is() {
 }
 
 // set Translation Table Base Register 0 (EL1).
-static inline void arch_set_ttbr0(uint64_t addr) {
+static inline void arch_set_ttbr0(u64 addr) {
     arch_fence();
     asm volatile("msr ttbr0_el1, %[x]" : : [x] "r"(addr));
     arch_tlbi_vmalle1is();
 }
 
 // set Translation Table Base Register 1 (EL1).
-static inline void arch_set_ttbr1(uint64_t addr) {
+static inline void arch_set_ttbr1(u64 addr) {
     arch_fence();
     asm volatile("msr ttbr1_el1, %[x]" : : [x] "r"(addr));
     arch_tlbi_vmalle1is();
@@ -135,6 +135,14 @@ static inline void arch_yield() {
     asm volatile("yield" ::: "memory");
 }
 
-void delay_us(uint64_t n);
+static inline void arch_enable_trap() {
+    asm volatile("msr daif, %[x]" ::[x] "r"(0ll));
+}
+
+static inline void arch_disable_trap() {
+    asm volatile("msr daif, %[x]" ::[x] "r"(0xfll << 6));
+}
+
+void delay_us(u64 n);
 
 #endif

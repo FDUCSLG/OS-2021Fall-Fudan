@@ -14,11 +14,6 @@ void init_console() {
 
 static bool panicked_flag = false;
 
-NORETURN void no_return() {
-    while (1)
-        arch_wfi();
-}
-
 // check whether other cores have already panicked.
 // if true, just terminate itself.
 // note: you must hold `ctx.lock` while checking.
@@ -66,7 +61,7 @@ void printf(const char *fmt, ...) {
     va_end(arg);
 }
 
-NORETURN void _panic(const char *file, size_t line, const char *fmt, ...) {
+NORETURN void _panic(const char *file, usize line, const char *fmt, ...) {
     acquire_spinlock(&ctx.lock);
     check_panicked();
 
@@ -75,7 +70,7 @@ NORETURN void _panic(const char *file, size_t line, const char *fmt, ...) {
 
     // print messages.
 
-    for (size_t i = 0; i < PANIC_BAR_LENGTH; i++)
+    for (usize i = 0; i < PANIC_BAR_LENGTH; i++)
         ctx.device.put(PANIC_BAR_CHAR);
     ctx.device.put(NEWLINE);
 

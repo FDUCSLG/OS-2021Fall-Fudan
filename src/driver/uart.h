@@ -3,7 +3,7 @@
 #ifndef _DRIVER_UART_H_
 #define _DRIVER_UART_H_
 
-#include <common/types.h>
+#include <common/defines.h>
 
 void init_uart();
 char uart_get_char();

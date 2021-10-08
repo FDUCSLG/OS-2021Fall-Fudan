@@ -77,7 +77,7 @@ int my_uvm_map(PTEntriesPtr pgdir, void *va, size_t sz, uint64_t pa) {
 void virtual_memory_init(VMemory *vmem_ptr) {
     vmem_ptr->pgdir_init = my_pgdir_init;
     vmem_ptr->pgdir_walk = my_pgdir_walk;
-    vmem_ptr->vm_free = vm_free;
+    vmem_ptr->vm_free = my_vm_free;
     vmem_ptr->uvm_map = my_uvm_map;
 }
 
