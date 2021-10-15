@@ -89,4 +89,27 @@ void vm_test() {
     /* TODO: Lab2 memory*/
 
     // Certify that your code works!
+    *((int64_t *)P2K(0)) = 0xac;
+    char *p = kalloc();
+    memset(p, 0, PAGE_SIZE);
+    uvm_map((uint64_t *)p, (void *)0x1000, PAGE_SIZE, 0);
+	uvm_switch(p);
+	PTEntry *pte = pgdir_walk(p, (void *)0x1000, 0);
+	if (pte == 0) {
+		puts("walk should not return 0"); while (1);
+	}
+	if (((uint64_t)pte >> 48) == 0) {
+		puts("pte should be virtual address"); while (1);
+	}
+	if ((*pte) >> 48 != 0) {
+		puts("*pte should store physical address"); while (1);
+	}
+	if (((*pte) & PTE_USER_DATA) != PTE_USER_DATA) {
+		puts("*pte should contain USE_DATA flags"); while (1);
+	}
+    if (*((int64_t *)0x1000) == 0xac) {
+        puts("Test_Map_Region Pass!");
+    } else {
+		puts("Test_Map_Region Fail!"); while (1);
+    }
 }
