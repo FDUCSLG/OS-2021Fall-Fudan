@@ -10,6 +10,10 @@
 
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
+/* 
+ * Context should at least contain callee-saved registers.
+ * You can add more information in it.
+ */
 /* Stack must always be 16 bytes aligned. */
 struct context {
     /* TODO: Lab3 Process */

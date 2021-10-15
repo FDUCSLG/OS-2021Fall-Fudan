@@ -27,7 +27,7 @@ struct scheduler {
     struct context *context;
 };
 
-struct scheduler simple_scheduler;
+extern struct scheduler simple_scheduler;
 
 struct cpu {
     struct scheduler *scheduler;
