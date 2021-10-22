@@ -26,6 +26,7 @@ void init_system_once() {
 	
     init_memory_manager();
     init_virtual_memory();
+    init_sched();
 
     // vm_test();
 

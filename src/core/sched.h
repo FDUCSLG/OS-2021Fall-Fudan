@@ -45,12 +45,13 @@ static inline struct cpu *thiscpu()
 }
 
 static inline void init_sched() {
-    thiscpu()->scheduler->op->init();
+    // thiscpu()->scheduler->op->init();
+    simple_scheduler.op->init();
 }
 
 static inline void init_cpu(struct scheduler *scheduler) {
     thiscpu()->scheduler = scheduler;
-    init_sched();
+    // init_sched();
 }
 
 static inline void enter_scheduler() {
