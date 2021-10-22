@@ -11,6 +11,27 @@
 
 struct cpu cpus[NCPU];
 
+static SpinLock init_lock = {.locked = 0};
+
+void init_system_once() {
+    if (!try_acquire_spinlock(&init_lock))
+        return;
+	// initialize BSS sections.
+    extern char edata[], end[];
+    memset(edata, 0, end - edata);
+
+    init_interrupt();
+    init_char_device();
+    init_console();
+	
+    init_memory_manager();
+    init_virtual_memory();
+
+    // vm_test();
+
+    release_spinlock(&init_lock);
+}
+
 void hello() {
     printf("CPU %d: HELLO!\n", cpuid());
     reset_clock(1000);
@@ -21,26 +42,19 @@ void init_system_per_cpu() {
     set_clock_handler(hello);
     init_trap();
 
+	/* TODO: Lab3 uncomment to test interrupt */
+    // test_kernel_interrupt();
     init_cpu(&simple_scheduler);
 }
 
 NORETURN void main() {
-    // initialize BSS sections.
-    extern char edata[], end[];
-    memset(edata, 0, end - edata);
-
-    init_interrupt();
-    init_char_device();
-    init_console();
 	/* TODO: Lab1 print */
-
-    init_memory_manager();
-    init_virtual_memory();
+	
+    init_system_once();
+    wait_spinlock(&init_lock);
 
     init_system_per_cpu();
 
-	/* TODO: Lab3 uncomment to test interrupt */
-    // test_kernel_interrupt();
     if (cpuid() == 0) {
         spawn_init_process();
         enter_scheduler();
