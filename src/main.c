@@ -41,7 +41,11 @@ NORETURN void main() {
 
 	/* TODO: Lab3 uncomment to test interrupt */
     // test_kernel_interrupt();
-    spawn_init_process();
-    enter_scheduler();
+    if (cpuid() == 0) {
+        spawn_init_process();
+        enter_scheduler();
+    } else {
+        enter_scheduler();
+    }
 
 }

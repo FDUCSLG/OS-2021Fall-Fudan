@@ -64,8 +64,27 @@
 .section ".text.boot"
 
 .global _start
-
 _start:
+    /**
+     * wake up other CPUs.
+     * see <https://github.com/raspberrypi/tools/blob/master/armstubs/armstub8.S>.
+     * which has been incorporated in `start.elf` (or `bootcode.bin`?).
+     */
+    adr     x0, entry
+    mov     x1, #1
+    mov     x2, #2
+    mov     x3, #3
+    mov     x9, 0xd8
+    str     x0, [x9, x1, lsl #3]
+    str     x0, [x9, x2, lsl #3]
+    str     x0, [x9, x3, lsl #3]
+
+    dsb     sy
+    isb
+
+    sev
+
+entry:
     /* get current exception level from CurrentEL[3:2]. */
     mrs     x9, CurrentEL
     and     x9, x9, #0xc

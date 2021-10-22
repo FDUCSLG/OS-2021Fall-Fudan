@@ -10,6 +10,7 @@ typedef struct {
     void (*page_init)(void *datastructure_ptr, void *start, void *end);
     void *(*page_alloc)(void *datastructure_ptr);
     void (*page_free)(void *datastructure_ptr, void *page_address);
+    SpinLock lock;
 } PMemory;
 
 typedef struct {
