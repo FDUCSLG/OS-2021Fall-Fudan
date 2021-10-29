@@ -2,4 +2,4 @@
 #include <core/sched.h>
 #include <core/console.h>
 
-/* TODO: Lab5 Add more Scheduler Policies */
+/* TODO: Lab6 Add more Scheduler Policies */

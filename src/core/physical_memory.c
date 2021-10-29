@@ -4,7 +4,7 @@
 #include <core/console.h>
 
 extern char end[];
-PMemory pmem; /* TODO: Lab5 multicore: Add locks where needed */
+PMemory pmem; /* TODO: Lab4 multicore: Add locks where needed */
 FreeListNode head;
 /*
  * Editable, as long as it works as a memory manager.
