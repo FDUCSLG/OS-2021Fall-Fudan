@@ -1,7 +1,5 @@
 #pragma once
 
-#include <common/types.h>
-
 #ifndef __cplusplus
 typedef _Bool bool;
 #define NO_RETURN _Noreturn
