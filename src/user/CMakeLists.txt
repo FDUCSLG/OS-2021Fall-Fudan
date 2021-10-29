@@ -1,3 +1,3 @@
-file(GLOB asm_sources CONFIGURE_DEPENDS "*.S")
+file(GLOB user_sources CONFIGURE_DEPENDS "*.S")
 
-add_library(user STATIC ${asm_sources})
+add_library(user STATIC ${user_sources})

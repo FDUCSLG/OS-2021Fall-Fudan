@@ -21,7 +21,7 @@
 #define IRQ_SRC_CORE(i)   (LOCAL_BASE + 0x60 + 4 * (i))
 #define IRQ_SRC_TIMER     (1 << 11)  // global timer
 #define IRQ_SRC_GPU       (1 << 8)
-#define IRQ_SRC_CNTPNSIRQ (1 << 1)  // core clock
+#define IRQ_SRC_CNTPNSIRQ (1 << 1)  // CPU clock
 #define FIQ_SRC_CORE(i)   (LOCAL_BASE + 0x70 + 4 * (i))
 
 typedef struct {

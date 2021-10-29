@@ -1,11 +1,11 @@
 
-#include <core/proc.h>
 #include <aarch64/mmu.h>
-#include <core/virtual_memory.h>
-#include <core/physical_memory.h>
 #include <common/string.h>
-#include <core/sched.h>
 #include <core/console.h>
+#include <core/physical_memory.h>
+#include <core/proc.h>
+#include <core/sched.h>
+#include <core/virtual_memory.h>
 
 void forkret();
 extern void trap_return();
@@ -48,7 +48,7 @@ void spawn_init_process() {
  * A fork child will first swtch here, and then "return" to user space.
  */
 void forkret() {
-	/* TODO: Lab3 Process */
+    /* TODO: Lab3 Process */
 
     release_sched_lock();
 }
@@ -61,5 +61,4 @@ void forkret() {
 NO_RETURN void exit() {
     struct proc *p = thiscpu()->proc;
     /* TODO: Lab3 Process */
-	
 }

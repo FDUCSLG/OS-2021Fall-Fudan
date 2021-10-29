@@ -58,7 +58,7 @@
                                 (MT_NORMAL_FLAGS << (8 * MT_NORMAL)) | \
                                 (MT_NORMAL_NC_FLAGS << (8 * MT_NORMAL_NC)))
 
-/* kernel stack size per core. Kernel stack sizes are fixed. */
+/* kernel stack size per CPU. Kernel stack sizes are fixed. */
 #define KERNEL_STACK_SIZE 4096
 
 .section ".text.boot"

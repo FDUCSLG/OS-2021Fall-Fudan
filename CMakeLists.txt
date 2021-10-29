@@ -5,7 +5,7 @@ project(rpi-os VERSION 0.1.0 LANGUAGES C ASM)
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
 # if we are already on aarch64 platform, there's no need to cross-compile.
-if(CMAKE_SYSTEM_PROCESSOR EQUAL "aarch64")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
     set(aarch64_prefix "")
     set(aarch64_gdb "gdb")
 else()

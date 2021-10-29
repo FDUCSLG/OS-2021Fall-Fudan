@@ -6,7 +6,7 @@ trap_entry:
      * Build your trap frame.
      * Hint:
      * 1. Use stp/ldp in favor of str/ldr to maintain stack alignment
-          For example, `stp x1, x2, [sp, #-16]!` is equivalent to 
+          For example, `stp x1, x2, [sp, #-16]!` is equivalent to
           first `push x2` and then `push x1`. Be careful about the order.
      * 2. Use mrs/msr to move from/to system registers such as
      *    ELR_EL1, SPSR_EL1, and SP_EL0.
@@ -32,4 +32,3 @@ trap_return:
      * and then `pop x2`.
      */
     /* TODO: Lab3 Interrupt */
-

@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef _DRIVER_AUX_H_
-#define _DRIVER_AUX_H_
-
 #include <driver/base.h>
 
 #define AUX_BASE (MMIO_BASE + 0x215000)
@@ -23,5 +20,3 @@
 #define AUX_UART_CLOCK 250000000
 
 #define AUX_MU_BAUD(baudrate) ((AUX_UART_CLOCK / ((baudrate)*8)) - 1)
-
-#endif

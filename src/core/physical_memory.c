@@ -1,7 +1,7 @@
 #include <aarch64/mmu.h>
-#include <core/physical_memory.h>
 #include <common/types.h>
 #include <core/console.h>
+#include <core/physical_memory.h>
 
 extern char end[];
 PMemory pmem; /* TODO: Lab4 multicore: Add locks where needed */
@@ -19,18 +19,16 @@ static void freelist_free(void *datastructure_ptr, void *page_address);
  * Returns 0 if the memory cannot be allocated.
  */
 static void *freelist_alloc(void *datastructure_ptr) {
-    FreeListNode *f = (FreeListNode *) datastructure_ptr; 
+    FreeListNode *f = (FreeListNode *)datastructure_ptr;
     /* TODO: Lab2 memory*/
-
 }
 
 /*
  * Free the page of physical memory pointed at by page_address.
  */
 static void freelist_free(void *datastructure_ptr, void *page_address) {
-    FreeListNode* f = (FreeListNode*) datastructure_ptr; 
+    FreeListNode *f = (FreeListNode *)datastructure_ptr;
     /* TODO: Lab2 memory*/
-
 }
 
 /*
@@ -38,11 +36,9 @@ static void freelist_free(void *datastructure_ptr, void *page_address) {
  */
 
 static void freelist_init(void *datastructure_ptr, void *start, void *end) {
-    FreeListNode* f = (FreeListNode*) datastructure_ptr; 
+    FreeListNode *f = (FreeListNode *)datastructure_ptr;
     /* TODO: Lab2 memory*/
-
 }
-
 
 static void init_PMemory(PMemory *pmem_ptr) {
     pmem_ptr->struct_ptr = (void *)&head;
@@ -55,12 +51,12 @@ void init_memory_manager(void) {
     // HACK Raspberry pi 4b.
     // size_t phystop = MIN(0x3F000000, mbox_get_arm_memory());
     size_t phystop = 0x3F000000;
-    
+
     // notice here for roundup
     void *ROUNDUP_end = ROUNDUP((void *)end, PAGE_SIZE);
     init_PMemory(&pmem);
     pmem.page_init(pmem.struct_ptr, ROUNDUP_end, (void *)P2K(phystop));
-	init_spinlock(&pmem.lock, "pmem");
+    init_spinlock(&pmem.lock, "pmem");
 }
 
 /*

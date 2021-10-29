@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef _DRIVER_GPIO_H_
-#define _DRIVER_GPIO_H_
-
 #include <driver/base.h>
 
 #define GPIO_BASE (MMIO_BASE + 0x200000)
@@ -25,5 +22,3 @@
 #define GPPUD     (GPIO_BASE + 0x94)
 #define GPPUDCLK0 (GPIO_BASE + 0x98)
 #define GPPUDCLK1 (GPIO_BASE + 0x9C)
-
-#endif

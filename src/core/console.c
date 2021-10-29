@@ -1,7 +1,7 @@
 #include <aarch64/intrinsic.h>
 #include <common/format.h>
-#include <core/console.h>
 #include <common/spinlock.h>
+#include <core/console.h>
 
 typedef struct {
     SpinLock lock;
@@ -20,7 +20,7 @@ void init_console() {
 
 static bool panicked_flag = false;
 
-// check whether other cores have already panicked.
+// check whether other CPUs have already panicked.
 // if true, just terminate itself.
 // note: you must hold `ctx.lock` while checking.
 static void check_panicked() {
@@ -80,7 +80,7 @@ NORETURN void _panic(const char *file, usize line, const char *fmt, ...) {
         ctx.device.put(PANIC_BAR_CHAR);
     ctx.device.put(NEWLINE);
 
-    format(_put_char, NULL, "KERNEL PANIC at core %zu:\n", cpuid());
+    format(_put_char, NULL, "KERNEL PANIC at CPU %zu:\n", cpuid());
     format(_put_char, NULL, "file: %s\n", file);
     format(_put_char, NULL, "line: %zu\n", line);
 
