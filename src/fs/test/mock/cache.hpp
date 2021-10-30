@@ -65,34 +65,44 @@ struct MockBlockCache {
         }
     };
 
+    // board: record all uncommitted atomic operations. `board[i] = true` means
+    // atomic operation i has called `end_op` and waits for final commit.
+    // oracle: to allocate id for each atomic operation.
+    // top: the maximum id of committed atomic operation.
+    // mutex & cv: protects board.
     std::mutex mutex;
     std::condition_variable cv;
-    std::atomic<usize> oracle, top;
-    std::unordered_map<usize, bool> board;
-    Meta tmpv[num_blocks], memv[num_blocks];
-    Cell tmp[num_blocks], mem[num_blocks];
+    std::atomic<usize> oracle, top_oracle;
+    std::unordered_map<usize, bool> scoreboard;
+
+    // mbit: bitmap cached in memory, which is volatile
+    // sbit: bitmap on SD card, which is persistent
+    // mblk: data blocks cached in memory, volatile
+    // sblk: data blocks on SD card, persistent
+    Meta mbit[num_blocks], sbit[num_blocks];
+    Cell mblk[num_blocks], sblk[num_blocks];
 
     MockBlockCache() {
         std::mt19937 gen(0x19260817);
 
         oracle.store(1);
-        top.store(0);
+        top_oracle.store(0);
 
         // fill disk with junk.
         for (usize i = 0; i < num_blocks; i++) {
-            tmpv[i].used = false;
-            tmp[i].index = i;
-            tmp[i].random(gen);
-            memv[i].used = false;
-            mem[i].index = i;
-            mem[i].random(gen);
+            mbit[i].used = false;
+            mblk[i].index = i;
+            mblk[i].random(gen);
+            sbit[i].used = false;
+            sblk[i].index = i;
+            sblk[i].random(gen);
         }
 
         // mock superblock.
         auto sblock = get_sblock();
         u8 *buf = reinterpret_cast<u8 *>(&sblock);
         for (usize i = 0; i < sizeof(sblock); i++) {
-            mem[1].block.data[i] = buf[i];
+            sblk[1].block.data[i] = buf[i];
         }
 
         // mock inodes.
@@ -125,7 +135,7 @@ struct MockBlockCache {
             step = std::min(num_inodes - i, static_cast<usize>(INODE_PER_BLOCK));
             buf = reinterpret_cast<u8 *>(&node[i]);
             for (usize k = 0; k < step * sizeof(InodeEntry); k++) {
-                mem[j].block.data[k] = buf[k];
+                sblk[j].block.data[k] = buf[k];
             }
         }
     }
@@ -135,16 +145,16 @@ struct MockBlockCache {
         std::mt19937 gen(0xdeadbeef);
 
         for (usize i = 0; i < num_blocks; i++) {
-            std::scoped_lock guard(tmpv[i].mutex);
-            if (tmpv[i].mark)
+            std::scoped_lock guard(mbit[i].mutex);
+            if (mbit[i].mark)
                 throw Internal("marked by others");
         }
 
         for (usize i = 0; i < num_blocks; i++) {
-            std::scoped_lock guard(tmp[i].mutex);
-            if (tmp[i].mark)
+            std::scoped_lock guard(mblk[i].mutex);
+            if (mblk[i].mark)
                 throw Internal("marked by others");
-            tmp[i].random(gen);
+            mblk[i].random(gen);
         }
     }
 
@@ -155,7 +165,7 @@ struct MockBlockCache {
         usize step = 0, count = 0;
         for (usize i = 0, j = inode_start; i < num_inodes; i += step, j++) {
             step = std::min(num_inodes - i, static_cast<usize>(INODE_PER_BLOCK));
-            auto *inodes = reinterpret_cast<InodeEntry *>(mem[j].block.data);
+            auto *inodes = reinterpret_cast<InodeEntry *>(sblk[j].block.data);
             for (usize k = 0; k < step; k++) {
                 if (inodes[k].type != INODE_INVALID)
                     count++;
@@ -171,8 +181,8 @@ struct MockBlockCache {
 
         usize count = 0;
         for (usize i = block_start; i < num_blocks; i++) {
-            std::scoped_lock guard(memv[i].mutex);
-            if (memv[i].used)
+            std::scoped_lock guard(sbit[i].mutex);
+            if (sbit[i].used)
                 count++;
         }
 
@@ -183,7 +193,7 @@ struct MockBlockCache {
     auto inspect(usize i) -> InodeEntry * {
         usize j = inode_start + i / INODE_PER_BLOCK;
         usize k = i % INODE_PER_BLOCK;
-        auto *arr = reinterpret_cast<InodeEntry *>(mem[j].block.data);
+        auto *arr = reinterpret_cast<InodeEntry *>(sblk[j].block.data);
         return &arr[k];
     }
 
@@ -194,11 +204,11 @@ struct MockBlockCache {
 
     auto check_and_get_cell(Block *b) -> Cell * {
         Cell *p = container_of(b, Cell, block);
-        isize offset = reinterpret_cast<u8 *>(p) - reinterpret_cast<u8 *>(tmp);
+        isize offset = reinterpret_cast<u8 *>(p) - reinterpret_cast<u8 *>(mblk);
         if (offset % sizeof(Cell) != 0)
             throw Panic("pointer not aligned");
 
-        isize i = p - tmp;
+        isize i = p - mblk;
         if (i < 0 || static_cast<usize>(i) >= num_blocks)
             throw Panic("block is not managed by cache");
 
@@ -224,56 +234,59 @@ struct MockBlockCache {
     void begin_op(OpContext *ctx) {
         std::unique_lock lock(mutex);
         ctx->id = oracle.fetch_add(1);
-        board[ctx->id] = false;
+        scoreboard[ctx->id] = false;
     }
 
     void end_op(OpContext *ctx) {
         std::unique_lock lock(mutex);
-        board[ctx->id] = true;
+        scoreboard[ctx->id] = true;
 
+        // is it safe to checkpoint now?
         bool do_checkpoint = true;
-        for (const auto &e : board) {
+        for (const auto &e : scoreboard) {
             do_checkpoint &= e.second;
         }
 
         if (do_checkpoint) {
             for (usize i = 0; i < num_blocks; i++) {
-                std::scoped_lock guard(tmpv[i].mutex, memv[i].mutex);
-                store(tmpv[i], memv[i]);
+                std::scoped_lock guard(mbit[i].mutex, sbit[i].mutex);
+                store(mbit[i], sbit[i]);
             }
 
             for (usize i = 0; i < num_blocks; i++) {
-                std::scoped_lock guard(tmp[i].mutex, mem[i].mutex);
-                store(tmp[i], mem[i]);
+                std::scoped_lock guard(mblk[i].mutex, sblk[i].mutex);
+                store(mblk[i], sblk[i]);
             }
 
             usize max_oracle = 0;
-            for (const auto &e : board) {
+            for (const auto &e : scoreboard) {
                 max_oracle = std::max(max_oracle, e.first);
             }
-            top.store(max_oracle);
-            board.clear();
+            top_oracle.store(max_oracle);
+            scoreboard.clear();
 
             cv.notify_all();
-        } else
-            cv.wait(lock, [&] { return ctx->id <= top.load(); });
+        } else {
+            // if there are other running atomic operations, just wait for them.
+            cv.wait(lock, [&] { return ctx->id <= top_oracle.load(); });
+        }
     }
 
     auto alloc(OpContext *ctx) -> usize {
         for (usize i = block_start; i < num_blocks; i++) {
-            std::scoped_lock guard(tmpv[i].mutex, memv[i].mutex);
-            load(tmpv[i], memv[i]);
+            std::scoped_lock guard(mbit[i].mutex, sbit[i].mutex);
+            load(mbit[i], sbit[i]);
 
-            if (!tmpv[i].used) {
-                tmpv[i].used = true;
+            if (!mbit[i].used) {
+                mbit[i].used = true;
                 if (!ctx)
-                    store(tmpv[i], memv[i]);
+                    store(mbit[i], sbit[i]);
 
-                std::scoped_lock guard(tmp[i].mutex, mem[i].mutex);
-                load(tmp[i], mem[i]);
-                tmp[i].zero();
+                std::scoped_lock guard(mblk[i].mutex, sblk[i].mutex);
+                load(mblk[i], sblk[i]);
+                mblk[i].zero();
                 if (!ctx)
-                    store(tmp[i], mem[i]);
+                    store(mblk[i], sblk[i]);
 
                 return i;
             }
@@ -285,27 +298,27 @@ struct MockBlockCache {
     void free(OpContext *ctx, usize i) {
         check_block_no(i);
 
-        std::scoped_lock guard(tmpv[i].mutex, memv[i].mutex);
-        load(tmpv[i], memv[i]);
-        if (!tmpv[i].used)
+        std::scoped_lock guard(mbit[i].mutex, sbit[i].mutex);
+        load(mbit[i], sbit[i]);
+        if (!mbit[i].used)
             throw Panic("free unused block");
 
-        tmpv[i].used = false;
+        mbit[i].used = false;
         if (!ctx)
-            store(tmpv[i], memv[i]);
+            store(mbit[i], sbit[i]);
     }
 
     auto acquire(usize i) -> Block * {
         check_block_no(i);
 
-        tmp[i].mutex.lock();
+        mblk[i].mutex.lock();
 
         {
-            std::scoped_lock guard(mem[i].mutex);
-            load(tmp[i], mem[i]);
+            std::scoped_lock guard(sblk[i].mutex);
+            load(mblk[i], sblk[i]);
         }
 
-        return &tmp[i].block;
+        return &mblk[i].block;
     }
 
     void release(Block *b) {
@@ -318,15 +331,15 @@ struct MockBlockCache {
         usize i = p->index;
 
         if (!ctx) {
-            std::scoped_lock guard(mem[i].mutex);
-            store(tmp[i], mem[i]);
+            std::scoped_lock guard(sblk[i].mutex);
+            store(mblk[i], sblk[i]);
         }
     }
 
     void fence() {
         std::unique_lock lock(mutex);
         usize current = oracle.load() - 1;
-        cv.wait(lock, [&] { return current <= top.load(); });
+        cv.wait(lock, [&] { return current <= top_oracle.load(); });
     }
 };
 

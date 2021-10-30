@@ -107,15 +107,15 @@ static void inode_put(OpContext *ctx, Inode *inode) {
     // TODO
 }
 
-// this function is private to inode interface, because it can allocate block
+// this function is private to inode layer, because it can allocate block
 // at arbitrary offset, which breaks the usual file abstraction.
 //
 // retrieve the block in `inode` where offset lives. If the block is not
-// allocated, `inode_map` will allocate a new block and update `inode`. at
+// allocated, `inode_map` will allocate a new block and update `inode`, at
 // which time, `*modified` will be set to true.
 // the block number is returned.
 //
-// NOTE: caller must hold `inode`'s lock.
+// NOTE: caller must hold the lock of `inode`.
 static usize inode_map(OpContext *ctx, Inode *inode, usize offset, bool *modified) {
     InodeEntry *entry = &inode->entry;
 

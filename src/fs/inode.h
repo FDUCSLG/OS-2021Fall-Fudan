@@ -67,7 +67,7 @@ typedef struct InodeTree {
 
     // decrement reference count of `inode` by one.
     // if reference count drops to zero and there's no file or directory linked to this
-    // inode, `iput` is in charge of freeing this inode both in memory and on disk.
+    // inode, `put` is in charge of freeing this inode both in memory and on disk.
     //
     // NOTE: caller must NOT hold the lock of `inode`.
     void (*put)(OpContext *ctx, Inode *inode);

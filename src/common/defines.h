@@ -7,8 +7,6 @@ typedef _Bool bool;
 #define NO_RETURN [[noreturn]]
 #endif
 
-// typedef _Bool bool;
-
 typedef signed char i8;
 typedef unsigned char u8;
 typedef signed short i16;
