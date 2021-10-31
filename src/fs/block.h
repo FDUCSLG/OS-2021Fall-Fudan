@@ -26,10 +26,10 @@ typedef struct BlockCache {
     // mark block at `block_no` is free.
     void (*free)(OpContext *ctx, usize block_no);
 
-    // lock the block at `block_no` increment its reference count by one.
+    // get and lock the block at `block_no`, incrementing its reference count by one.
     Block *(*acquire)(usize block_no);
 
-    // unlock `block` and decrement its reference count by one.
+    // unlock `block` and decrement its reference count by one, and return it back.
     void (*release)(Block *block);
 
     // synchronize the content of `block` to disk.

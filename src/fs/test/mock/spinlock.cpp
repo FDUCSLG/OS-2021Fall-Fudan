@@ -2,10 +2,8 @@
 
 namespace {
 struct Lock {
-    Lock() : lock(mutex, std::defer_lock) {}
-
+    bool locked;
     std::mutex mutex;
-    std::unique_lock<std::mutex> lock;
 };
 
 Map<struct SpinLock *, Lock> map;
@@ -17,14 +15,18 @@ void init_spinlock(struct SpinLock *lock, const char *name [[maybe_unused]]) {
 }
 
 void acquire_spinlock(struct SpinLock *lock) {
-    map[lock].lock.lock();
+    auto &m = map[lock];
+    m.mutex.lock();
+    m.locked = true;
 }
 
 void release_spinlock(struct SpinLock *lock) {
-    map[lock].lock.unlock();
+    auto &m = map[lock];
+    m.locked = false;
+    m.mutex.unlock();
 }
 
 bool holding_spinlock(struct SpinLock *lock) {
-    return map[lock].lock.owns_lock();
+    return map[lock].locked;
 }
 }
