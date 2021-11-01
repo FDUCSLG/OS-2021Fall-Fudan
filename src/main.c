@@ -65,4 +65,6 @@ NORETURN void main() {
     } else {
         enter_scheduler();
     }
+
+    no_return();
 }
