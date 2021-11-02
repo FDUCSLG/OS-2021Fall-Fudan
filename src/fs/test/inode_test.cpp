@@ -50,10 +50,13 @@ int test_alloc() {
 
 int test_sync() {
     auto *p = inodes.get(1);
+
+    inodes.lock(p);
     assert_eq(p->entry.type, INODE_DIRECTORY);
     p->entry.major = 0x19;
     p->entry.minor = 0x26;
     p->entry.indirect = 0xa817;
+    inodes.unlock(p);
 
     mock.begin_op(ctx);
     inodes.lock(p);
@@ -130,7 +133,9 @@ int test_touch() {
     mock.begin_op(ctx);
     usize ino = inodes.alloc(ctx, INODE_DIRECTORY);
     auto *q = inodes.get(ino);
+    inodes.lock(q);
     assert_eq(q->entry.type, INODE_DIRECTORY);
+    inodes.unlock(q);
     assert_eq(mock.count_inodes(), n);
     mock.end_op(ctx);
 
