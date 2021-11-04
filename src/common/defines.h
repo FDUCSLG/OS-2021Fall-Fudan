@@ -16,6 +16,9 @@ static const bool false = 0;
 
 #endif
 
+// for compatibility.
+#define NORETURN NO_RETURN
+
 typedef signed char i8;
 typedef unsigned char u8;
 typedef signed short i16;
