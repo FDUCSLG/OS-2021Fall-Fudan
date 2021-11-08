@@ -24,9 +24,9 @@ struct MockBlockCache {
         sblock.num_data_blocks = num_blocks - block_start;
         sblock.num_inodes = num_inodes;
         sblock.num_log_blocks = 50;
-        sblock.log_start = 100;
+        sblock.log_start = 2;
         sblock.inode_start = inode_start;
-        sblock.bitmap_start = 2;
+        sblock.bitmap_start = 900;
         return sblock;
     }
 
