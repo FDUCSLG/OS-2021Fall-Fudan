@@ -27,12 +27,7 @@ As we implement round-robin-like schedule policy, in timer interrupt, we should 
 In addition to implementing `yield()`, you should also call it in appropriate place.
 
 ## 6.2 MULTI-scheduler, container
-41572
-808
-8700
-00
-7207270
-700700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
 The feature of `struct sched_op` and `struct scheduler` makes it easy for us to implement multi-scheduler design.
 
 Here is the structure of the new design:
@@ -133,3 +128,4 @@ This two functions in `core/proc.c` is implemented for use later.
 Deadline: two or three weeks
 
 Submit a PDF as usual.
+
