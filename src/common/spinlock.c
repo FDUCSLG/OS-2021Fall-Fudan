@@ -25,7 +25,7 @@ bool try_acquire_spinlock(SpinLock *lock) {
 
 void acquire_spinlock(SpinLock *lock) {
     if (holding_spinlock(lock)) {
-        PANIC("acquire: lock already held\n");
+        PANIC("acquire: lock %s already held\n", lock->name);
     }
     while (!try_acquire_spinlock(lock)) {}
 }

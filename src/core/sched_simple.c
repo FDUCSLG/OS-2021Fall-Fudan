@@ -4,6 +4,7 @@
 #include <core/sched.h>
 #include <core/virtual_memory.h>
 
+#ifndef MULTI_SCHEDULER
 struct {
     struct proc proc[NPROC];
     SpinLock lock;
@@ -78,3 +79,4 @@ static void sched_simple() {
 static struct proc *alloc_pcb_simple() {
     /* TODO: Lab3 Schedule */
 }
+#endif

@@ -2,6 +2,7 @@
 #include <common/string.h>
 #include <core/arena.h>
 #include <core/console.h>
+#include <core/container.h>
 #include <core/physical_memory.h>
 #include <core/proc.h>
 #include <core/sched.h>
@@ -32,6 +33,7 @@ void init_system_once() {
 
     vm_test();
     arena_test();
+    init_container();
 
     release_spinlock(&init_lock);
 }
@@ -39,6 +41,7 @@ void init_system_once() {
 void hello() {
     printf("CPU %d: HELLO!\n", cpuid());
     reset_clock(1000);
+    yield();
 }
 
 void init_system_per_cpu() {
@@ -48,7 +51,7 @@ void init_system_per_cpu() {
 
     /* TODO: Lab3 uncomment to test interrupt */
     // test_kernel_interrupt();
-    init_cpu(&simple_scheduler);
+    init_cpu(&root_container->scheduler);
 }
 
 NORETURN void main() {
@@ -61,6 +64,7 @@ NORETURN void main() {
 
     if (cpuid() == 0) {
         spawn_init_process();
+        container_test_init();
         enter_scheduler();
     } else {
         enter_scheduler();
