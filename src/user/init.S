@@ -14,7 +14,14 @@ icode:
     svc     #0
 
 ispin:
+    mov		x8, #SYS_myyield
+    svc		#0
     b       ispin
+
+exit:
+    mov     x8, #SYS_myexit
+    svc     #0
+    b exit
 
 init:
     .string "/init\0"

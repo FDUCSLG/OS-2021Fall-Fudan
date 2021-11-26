@@ -1,8 +1,12 @@
+#include <aarch64/arm.h>
 #include <aarch64/intrinsic.h>
 #include <core/console.h>
+#include <core/proc.h>
 #include <core/syscall.h>
 #include <core/trap.h>
+#include <driver/clock.h>
 #include <driver/interrupt.h>
+#include <driver/irq.h>
 
 void init_trap() {
     extern char exception_vector[];
@@ -16,7 +20,7 @@ void trap_global_handler(Trapframe *frame) {
     u64 iss = esr & ESR_ISS_MASK;
     u64 ir = esr & ESR_IR_MASK;
 
-    arch_reset_esr();
+    // u32 src = get32(IRQ_SRC_CORE(cpuid()));
 
     switch (ec) {
         case ESR_EC_UNKNOWN: {

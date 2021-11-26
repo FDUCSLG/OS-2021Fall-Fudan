@@ -1,4 +1,5 @@
 #include <aarch64/mmu.h>
+#include <common/types.h>
 #pragma once
 
 #ifndef _CORE_VIRTUAL_MEMORY_

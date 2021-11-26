@@ -1,8 +1,10 @@
+#include <aarch64/arm.h>
 #include <aarch64/intrinsic.h>
 #include <core/console.h>
 #include <driver/base.h>
 #include <driver/clock.h>
 #include <driver/interrupt.h>
+#include <driver/irq.h>
 
 #define IRQ_BASIC_PENDING  (MMIO_BASE + 0xB200)
 #define IRQ_PENDING_1      (MMIO_BASE + 0xB204)
@@ -34,7 +36,8 @@ void init_interrupt() {
     for (usize i = 0; i < NUM_IRQ_TYPES; i++) {
         ctx.handler[i] = 0;
     }
-
+    put32(ENABLE_IRQS_1, AUX_INT);
+    put32(ENABLE_IRQS_2, VC_ARASANSDIO_INT);
     device_put_u32(GPU_INT_ROUTE, GPU_IRQ2CORE(0));
 }
 
@@ -55,7 +58,7 @@ void interrupt_global_handler() {
     if (source & IRQ_SRC_GPU) {
         source ^= IRQ_SRC_GPU;
 
-        u32 map = device_get_u32(IRQ_PENDING_1) | (((u64)device_get_u32(IRQ_PENDING_2)) << 32);
+        u64 map = device_get_u32(IRQ_PENDING_1) | (((u64)device_get_u32(IRQ_PENDING_2)) << 32);
         for (usize i = 0; i < NUM_IRQ_TYPES; i++) {
             if ((map >> i) & 1) {
                 if (ctx.handler[i])

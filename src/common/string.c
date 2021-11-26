@@ -2,7 +2,7 @@
 
 void *memset(void *s, int c, usize n) {
     for (usize i = 0; i < n; i++)
-        ((u8 *)s)[i] = c & 0xff;
+        ((u8 *)s)[i] = (u8)(c & 0xff);
 
     return s;
 }

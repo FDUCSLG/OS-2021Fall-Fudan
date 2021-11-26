@@ -1,6 +1,9 @@
+#include <aarch64/arm.h>
 #include <aarch64/intrinsic.h>
+#include <core/console.h>
 #include <driver/aux.h>
 #include <driver/gpio.h>
+#include <driver/interrupt.h>
 #include <driver/uart.h>
 
 void init_uart() {
@@ -26,12 +29,14 @@ void init_uart() {
     device_put_u32(AUX_MU_IIR_REG, 6);
     // finally, enable receiver and transmitter.
     device_put_u32(AUX_MU_CNTL_REG, 3);
+
+    set_interrupt_handler(IRQ_AUX, uart_intr);
 }
 
 char uart_get_char() {
-    int state = device_get_u32(AUX_MU_IIR_REG);
+    u32 state = device_get_u32(AUX_MU_IIR_REG);
     if ((state & 1) || (state & 6) != 4)
-        return -1;
+        return (char)-1;
 
     return device_get_u32(AUX_MU_IO_REG) & 0xff;
 }
@@ -44,4 +49,10 @@ void uart_put_char(char c) {
     // fix Windows's '\r'.
     if (c == '\n')
         uart_put_char('\r');
+}
+
+void uart_intr() {
+    for (int stat; !((stat = (int)get32(AUX_MU_IIR_REG)) & 1);)
+        if ((stat & 6) == 4)
+            printf("%c", get32(AUX_MU_IO_REG) & 0xFF);
 }

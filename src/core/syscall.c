@@ -1,4 +1,5 @@
 #include <core/console.h>
+#include <core/proc.h>
 #include <core/syscall.h>
 
 /*

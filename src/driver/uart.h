@@ -5,3 +5,4 @@
 void init_uart();
 char uart_get_char();
 void uart_put_char(char c);
+void uart_intr();
