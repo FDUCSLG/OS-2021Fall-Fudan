@@ -32,18 +32,21 @@ static INLINE u32 *get_addrs(Block *block) {
 void init_inodes(const SuperBlock *_sblock, const BlockCache *_cache) {
     ArenaPageAllocator allocator = {.allocate = kalloc, .free = kfree};
 
-    init_spinlock(&lock, "InodeTree");
+    init_spinlock(&lock, "inode tree");
     init_list_node(&head);
     sblock = _sblock;
     cache = _cache;
     init_arena(&arena, sizeof(Inode), allocator);
 
-    inodes.root = inodes.get(ROOT_INODE_NO);
+    if (ROOT_INODE_NO < sblock->num_inodes)
+        inodes.root = inodes.get(ROOT_INODE_NO);
+    else
+        printf("(warn) init_inodes: no root inode.\n");
 }
 
 // initialize in-memory inode.
 static void init_inode(Inode *inode) {
-    init_spinlock(&inode->lock, "Inode");
+    init_spinlock(&inode->lock, "inode");
     init_rc(&inode->rc);
     init_list_node(&inode->node);
     inode->inode_no = 0;

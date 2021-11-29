@@ -34,10 +34,6 @@ static void stub_sync(OpContext *ctx, Block *block) {
     mock.sync(ctx, block);
 }
 
-static void stub_fence() {
-    mock.fence();
-}
-
 static struct _Loader {
     _Loader() {
         sblock = mock.get_sblock();
@@ -49,6 +45,5 @@ static struct _Loader {
         cache.acquire = stub_acquire;
         cache.release = stub_release;
         cache.sync = stub_sync;
-        cache.fence = stub_fence;
     }
 } _loader;

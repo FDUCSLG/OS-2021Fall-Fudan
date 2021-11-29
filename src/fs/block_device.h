@@ -1,6 +1,6 @@
 #pragma once
 
-#include <common/defines.h>
+#include <fs/defines.h>
 
 typedef struct {
     // read `BLOCK_SIZE` bytes in block at `block_no` to `buffer`.
@@ -11,3 +11,8 @@ typedef struct {
     // caller must guarantee `buffer` contains at least `BLOCK_SIZE` bytes.
     void (*write)(usize block_no, u8 *buffer);
 } BlockDevice;
+
+extern BlockDevice block_device;
+
+void init_block_device();
+const SuperBlock *get_super_block();

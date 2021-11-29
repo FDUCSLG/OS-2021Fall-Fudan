@@ -22,12 +22,28 @@ public:
         map.try_emplace(key, std::forward<Args>(args)...);
     }
 
+    bool contain(const Key &key) {
+        std::shared_lock lock(mutex);
+        return map.find(key) != map.end();
+    }
+
     auto operator[](const Key &key) -> Value & {
         std::shared_lock lock(mutex);
         auto it = map.find(key);
         if (it == map.end())
             throw Internal("key not found");
         return it->second;
+    }
+
+    auto safe_get(const Key &key) -> Value & {
+        std::shared_lock lock(mutex);
+        auto it = map.find(key);
+        if (it == map.end()) {
+            lock.unlock();
+            try_add(key);
+            lock.lock();
+        }
+        return map[key];
     }
 
 private:

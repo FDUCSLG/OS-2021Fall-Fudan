@@ -18,7 +18,7 @@ void _assert_eq(const X &actual, const Y &expect, const char *expr, const std::s
         buf << location << ": ";
         buf << "assert_eq failed: '" << expr << "': expect '" << expect << "', got '" << actual
             << "'";
-        throw Panic(buf.str());
+        throw AssertionFailure(buf.str());
     }
 }
 
@@ -33,7 +33,7 @@ void _assert_ne(const X &actual, const Y &expect, const char *expr, const std::s
         buf << location << ": ";
         buf << "assert_ne failed: '" << expr << "': expect ≠ '" << expect << "', got '" << actual
             << "'";
-        throw Panic(buf.str());
+        throw AssertionFailure(buf.str());
     }
 }
 
@@ -47,7 +47,7 @@ _assert_true(bool predicate, const char *expr, const std::string &location) {
         std::stringstream buf;
         buf << location << ": ";
         buf << "assert_true failed: '" << expr << "'";
-        throw Panic(buf.str());
+        throw AssertionFailure(buf.str());
     }
 }
 

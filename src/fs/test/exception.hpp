@@ -25,6 +25,11 @@ struct Panic final : Exception {
     virtual ~Panic() = default;
 };
 
+struct AssertionFailure final : Exception {
+    using Exception::Exception;
+    virtual ~AssertionFailure() = default;
+};
+
 struct Offline final : Exception {
     using Exception::Exception;
     virtual ~Offline() = default;

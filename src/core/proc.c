@@ -69,7 +69,6 @@ NO_RETURN void exit() {
  */
 void yield() {
     /* TODO: lab6 container */
-
 }
 
 /*
@@ -78,22 +77,19 @@ void yield() {
  */
 void sleep(void *chan, SpinLock *lock) {
     /* TODO: lab6 container */
-
 }
 
 /* Wake up all processes sleeping on chan. */
 void wakeup(void *chan) {
     /* TODO: lab6 container */
-
 }
 
-/* 
+/*
  * Add process at thiscpu()->container,
  * execute code in src/user/loop.S
  */
 void add_loop_test(int times) {
     for (int i = 0; i < times; i++) {
         /* TODO: lab6 container */
-
     }
 }

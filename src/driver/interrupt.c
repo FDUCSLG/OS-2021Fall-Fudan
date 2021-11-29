@@ -42,7 +42,7 @@ void init_interrupt() {
 }
 
 void set_interrupt_handler(InterruptType type, InterruptHandler handler) {
-    device_put_u32(ENABLE_IRQS_1 + 4 * (type / 32), 1 << (type % 32));
+    device_put_u32(ENABLE_IRQS_1 + 4 * (type / 32), 1u << (type % 32));
     ctx.handler[type] = handler;
 }
 

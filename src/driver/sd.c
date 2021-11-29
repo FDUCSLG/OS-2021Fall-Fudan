@@ -507,8 +507,6 @@ void sd_init() {
      * Remember to call sd_init() at somewhere.
      */
     /* TODO: Lab7 driver. */
-    
-
 
     /*
      * Read and parse 1st block (MBR) and collect whatever
@@ -519,7 +517,6 @@ void sd_init() {
      */
 
     /* TODO: Lab7 driver. */
-
 }
 
 static void sd_delayus(u32 c) {
@@ -573,21 +570,21 @@ void sd_intr() {
     /*
      * Pay attention to whether there is any element in the buflist.
 
-     * Understand the meanings of EMMC_INTERRUPT, EMMC_DATA, INT_DATA_DONE, 
+     * Understand the meanings of EMMC_INTERRUPT, EMMC_DATA, INT_DATA_DONE,
      * INT_READ_RDY, B_DIRTY, B_VALID and some other flags.
-     * 
-     * Notice that reading and writing are different, you can use flags 
+     *
+     * Notice that reading and writing are different, you can use flags
      * to identify.
-     * 
+     *
      * Remember to clear the flags after reading/writing.
-     * 
+     *
      * When finished, remember to use pop and check whether the list is
      * empty, if not, continue to read/write.
-     * 
+     *
      * You may use some buflist functions, disb(), sd_start(), wakeup() and
      * sdWaitForInterrupt() to complete this function.
      */
-    
+
     /* TODO: Lab7 driver. */
 }
 
@@ -597,10 +594,9 @@ void sd_intr() {
  * Else if B_VALID is not set, read buf from disk, set B_VALID.
  */
 void sdrw(struct buf *b) {
-    
-    /* 
+    /*
      * Add to the list, if list is empty, then use sd_start
-     * then sleep, use loop to check whether buf flag is modified, if modified, then break 
+     * then sleep, use loop to check whether buf flag is modified, if modified, then break
      */
 
     /* TODO: Lab7 driver. */
@@ -1044,7 +1040,7 @@ static u32 sdGetClockDivider(u32 freq) {
         divisor = closest;
     // Version 2 take power 2
     else
-        divisor = (1 << shiftcount);
+        divisor = (1u << shiftcount);
 
     if (divisor <= 2) {  // Too dangerous to go for divisor 1 unless you test
         divisor = 2;     // You can't take divisor below 2 on slow cards
@@ -1438,8 +1434,8 @@ static void sdParseCID() {
 
     // For some reason cards I have looked at seem to have the Y/M in
     // bits 11:0 whereas the spec says they should be in bits 19:8
-    int dateY = ((sdCard.cid[3] & 0x00000ff0) >> 4) + 2000;
-    int dateM = (sdCard.cid[3] & 0x0000000f);
+    int dateY = (int)((sdCard.cid[3] & 0x00000ff0) >> 4) + 2000;
+    int dateM = (int)(sdCard.cid[3] & 0x0000000f);
 
     printf("- EMMC: SD Card %s %dMb UHS-I %d mfr %d '%s:%s' r%d.%d %d/%d, #%x RCA %x\n",
            SD_TYPE_NAME[sdCard.type],

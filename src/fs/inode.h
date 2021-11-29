@@ -1,11 +1,10 @@
 #pragma once
 
-#include <common/defines.h>
 #include <common/list.h>
 #include <common/rc.h>
 #include <common/spinlock.h>
-#include <fs/block.h>
-#include <fs/fs.h>
+#include <fs/cache.h>
+#include <fs/defines.h>
 
 #define ROOT_INODE_NO 1
 
@@ -50,7 +49,7 @@ typedef struct InodeTree {
 
     // return a pointer to in-memory inode of `inode_no` and increment its
     // reference count by one.
-    // caller should guarantee `inode_no` points an allocated inode.
+    // caller should guarantee `inode_no` points to an allocated inode.
     Inode *(*get)(usize inode_no);
 
     // originally named `itrunc` in xv6, i.e. "truncate".

@@ -9,7 +9,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-using TestFunc = std::function<int()>;
+using TestFunc = std::function<void()>;
 
 struct Testcase {
     std::string name;
@@ -29,8 +29,10 @@ public:
 
     static bool run(const Testcase &testcase) {
         int pid;
-        if ((pid = fork()) == 0)
-            exit(testcase.func());
+        if ((pid = fork()) == 0) {
+            testcase.func();
+            exit(0);
+        }
 
         int ws;
         waitpid(pid, &ws, 0);
