@@ -517,6 +517,7 @@ void sd_init() {
      */
 
     /* TODO: Lab7 driver. */
+
 }
 
 static void sd_delayus(u32 c) {

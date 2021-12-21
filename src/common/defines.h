@@ -14,6 +14,8 @@ static const bool false = 0;
 #define NULL      0
 #define NO_RETURN [[noreturn]]
 
+#define restrict __restrict__
+
 #endif
 
 // for compatibility.
