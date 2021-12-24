@@ -2,6 +2,7 @@
 
 #include <common/variadic.h>
 #include <core/char_device.h>
+#include <fs/inode.h>
 
 #define NEWLINE '\n'
 
@@ -26,3 +27,7 @@ NORETURN void _panic(const char *file, usize line, const char *fmt, ...);
         if (!(predicate))                                                                          \
             PANIC("assertion failed: \"%s\". %s", #predicate, __VA_ARGS__);                        \
     } while (false)
+
+void console_intr(char (*)());
+isize console_write(Inode *ip, char *buf, isize n);
+isize console_read(Inode *ip, char *dst, isize n);

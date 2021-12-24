@@ -6,6 +6,10 @@
 #include <core/proc.h>
 #include <core/sched.h>
 #include <core/virtual_memory.h>
+#include <driver/sd.h>
+#include <fs/file.h>
+#include <fs/fs.h>
+#include <fs/inode.h>
 
 void forkret();
 extern void trap_return();
@@ -61,6 +65,7 @@ void forkret() {
 NO_RETURN void exit() {
     struct proc *p = thiscpu()->proc;
     /* TODO: Lab3 Process */
+	/* TODO: Lab9 Shell */
 }
 
 /*
@@ -92,4 +97,31 @@ void add_loop_test(int times) {
     for (int i = 0; i < times; i++) {
         /* TODO: lab6 container */
     }
+}
+
+int growproc(int n) {
+	/* TODO: lab9 shell */
+
+    return 0;
+}
+
+/*
+ * Create a new process copying p as the parent.
+ * Sets up stack to return as if from system call.
+ * Caller must set state of returned proc to RUNNABLE.
+ */
+int fork() {
+    /* TODO: Lab9 shell */
+
+    return 0;
+}
+
+/*
+ * Wait for a child process to exit and return its pid.
+ * Return -1 if this process has no children.
+ */
+int wait() {
+    /* TODO: Lab9 shell. */
+
+    return 0;
 }

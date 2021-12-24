@@ -46,12 +46,12 @@ typedef struct {
 } SuperBlock;
 
 // `type == INODE_INVALID` implies this inode is free.
-typedef struct {
+typedef struct dinode {
     InodeType type;
     u16 major;                    // major device id, for INODE_DEVICE only.
     u16 minor;                    // minor device id, for INODE_DEVICE only.
     u16 num_links;                // number of hard links to this inode in the filesystem.
-    u16 num_bytes;                // number of bytes in the file, i.e. the size of file.
+    u32 num_bytes;                // number of bytes in the file, i.e. the size of file.
     u32 addrs[INODE_NUM_DIRECT];  // direct addresses/block numbers.
     u32 indirect;                 // the indirect address block.
 } InodeEntry;
@@ -62,7 +62,7 @@ typedef struct {
 } IndirectBlock;
 
 // directory entry. `inode_no == 0` implies this entry is free.
-typedef struct {
+typedef struct dirent {
     u16 inode_no;
     char name[FILE_NAME_MAX_LENGTH];
 } DirEntry;
@@ -71,3 +71,6 @@ typedef struct {
     usize num_blocks;
     usize block_no[LOG_MAX_SIZE];
 } LogHeader;
+
+// mkfs only
+#define FSSIZE 1000  // Size of file system in blocks

@@ -5,6 +5,7 @@
 #include <common/spinlock.h>
 #include <fs/cache.h>
 #include <fs/defines.h>
+#include <sys/stat.h>
 
 #define ROOT_INODE_NO 1
 
@@ -74,12 +75,12 @@ typedef struct InodeTree {
     // read exactly `count` bytes from `inode`, beginning at `offset`, to `dest`.
     //
     // NOTE: caller must hold the lock of `inode`.
-    void (*read)(Inode *inode, u8 *dest, usize offset, usize count);
+    usize (*read)(Inode *inode, u8 *dest, usize offset, usize count);
 
     // write exactly `count` bytes from `src` to `inode`, beginning at `offset`.
     //
     // NOTE: caller must hold the lock of `inode`.
-    void (*write)(OpContext *ctx, Inode *inode, u8 *src, usize offset, usize count);
+    usize (*write)(OpContext *ctx, Inode *inode, u8 *src, usize offset, usize count);
 
     // for directory inode only.
     //
@@ -115,3 +116,6 @@ typedef struct InodeTree {
 extern InodeTree inodes;
 
 void init_inodes(const SuperBlock *sblock, const BlockCache *cache);
+Inode *namei(const char *path, OpContext *ctx);
+Inode *nameiparent(const char *path, char *name, OpContext *ctx);
+void stati(Inode *ip, struct stat *st);
