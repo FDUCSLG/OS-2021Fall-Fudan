@@ -47,10 +47,16 @@ add_custom_target(debug
             -ex "file ${kernel_elf}"
             -ex "target remote localhost:1234"
     DEPENDS kernel)
-add_custom_target(init_libc
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+	add_custom_target(init_libc
 	COMMAND git submodule update --init && cd ../libc &&
-			 export CROSS_COMPILE=${aarch64_prefix} &&
-			 ./configure --target=aarch64)
+			./configure)
+else()
+	add_custom_target(init_libc
+		COMMAND git submodule update --init && cd ../libc &&
+				export CROSS_COMPILE=${aarch64_prefix} &&
+				./configure --target=aarch64)
+endif()
 
 set(LIBC_SPEC ${CMAKE_CURRENT_SOURCE_DIR}/libc/lib/musl-gcc.specs)
 set(LIBC_SPEC_OUT musl-gcc.specs)

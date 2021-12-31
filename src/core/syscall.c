@@ -86,6 +86,9 @@ u64 syscall_dispatch(Trapframe *frame) {
     return 0;
 }
 
+#ifndef USPACE_TOP
+#define USPACE_TOP 0x0001000000000000
+#endif
 /* Check if a block of memory lies within the process user space. */
 int in_user(void *s, usize n) {
     struct proc *p = thiscpu()->proc;
@@ -127,7 +130,8 @@ int argint(int n, int *ip) {
         // warn("too many system call parameters");
         return -1;
     }
-    *ip = proc->tf->x[n];
+    // set *ip to x[n] like:
+    // *ip = proc->tf->x[n];
 
     return 0;
 }
@@ -143,7 +147,8 @@ int argu64(int n, u64 *ip) {
         // warn("too many system call parameters");
         return -1;
     }
-    *ip = proc->tf->x[n];
+	// set *ip to x[n] like:
+    // *ip = proc->tf->x[n];
 
     return 0;
 }
