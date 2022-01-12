@@ -61,6 +61,14 @@ void forkret() {
  * Exit the current process.  Does not return.
  * An exited process remains in the zombie state
  * until its parent calls wait() to find out it exited.
+ * 
+ * In Lab9, you should add the following:
+ * (1) close open files
+ * (2) release inode `pwd`
+ * (3) wake up its parent
+ * (4) pass its children to `init` process
+ * 
+ * Why not set the state to UNUSED in this function?
  */
 NO_RETURN void exit() {
     struct proc *p = thiscpu()->proc;
@@ -99,6 +107,10 @@ void add_loop_test(int times) {
     }
 }
 
+/*
+ * Call allocuvm or deallocuvm.
+ * This function is used in `sys_brk`.
+ */
 int growproc(int n) {
 	/* TODO: lab9 shell */
 
@@ -109,6 +121,8 @@ int growproc(int n) {
  * Create a new process copying p as the parent.
  * Sets up stack to return as if from system call.
  * Caller must set state of returned proc to RUNNABLE.
+ * 
+ * Don't forget to copy file descriptors and `cwd` inode.
  */
 int fork() {
     /* TODO: Lab9 shell */
@@ -119,6 +133,8 @@ int fork() {
 /*
  * Wait for a child process to exit and return its pid.
  * Return -1 if this process has no children.
+ * 
+ * You can release the PCB (set state to UNUSED) of its dead children.
  */
 int wait() {
     /* TODO: Lab9 shell. */

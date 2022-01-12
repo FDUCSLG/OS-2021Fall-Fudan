@@ -10,6 +10,9 @@ int sys_yield() {
     return 0;
 }
 
+/* 
+ * Get the parameters and call growproc.
+ */
 usize sys_brk() {
     /* TODO: Lab9 Shell */
     return 0;

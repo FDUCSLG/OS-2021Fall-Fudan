@@ -257,7 +257,7 @@ Inode *nameiparent(const char *path, char *name, OpContext *ctx) {
  * Caller must hold ip->lock.
  */
 void stati(Inode *ip, struct stat *st) {
-    // TODO: Lab9 Shell
+    /* TODO: Lab9 Shell */
     st->st_dev = 1;
 
     switch (ip->entry.type) {
