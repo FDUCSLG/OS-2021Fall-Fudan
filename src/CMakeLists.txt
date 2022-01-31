@@ -4,6 +4,10 @@ set(CMAKE_C_COMPILER ${aarch64_gcc})
 set(CMAKE_ASM_COMPILER ${aarch64_gcc})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libc/obj/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libc/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libc/arch/aarch64)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libc/arch/generic)
 
 set(compiler_warnings "-Wall -Wextra \
     -Wconversion -Wsign-conversion")
